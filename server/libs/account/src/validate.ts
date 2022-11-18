@@ -34,7 +34,7 @@ export const accountValidation = {
     body: new ValidatorPipe<IAccountCreateBody>(
       Joi.object<IAccountCreateBody>({
         role: Joi.object<IAccountRole>({
-          superAdmin: Joi.boolean().required().valid(false),
+          superAdmin: Joi.boolean().required(),
           admin: Joi.boolean().required(),
           user: Joi.boolean().required(),
         }),

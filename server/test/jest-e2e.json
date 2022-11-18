@@ -17,7 +17,7 @@
     "@app/utils": "<rootDir>/../libs/utils/src",
     "@app/orm/(.*)": "<rootDir>/../libs/orm/src/$1",
     "@app/orm": "<rootDir>/../libs/orm/src",
-    "@app/group/(.*)": "<rootDir>/../libs/group/src/$1",
-    "@app/group": "<rootDir>/../libs/group/src"
+    "@app/auth/(.*)": "<rootDir>/../libs/auth/src/$1",
+    "@app/auth": "<rootDir>/../libs/auth/src"
   }
 }

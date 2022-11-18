@@ -2,6 +2,7 @@ import {
   Injectable,
   NotFoundException,
   BadRequestException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { RedisService } from '@liaoliaots/nestjs-redis';
@@ -9,6 +10,7 @@ import Redis from 'ioredis';
 import { InjectModel } from 'nestjs-objection';
 import { v5 as hash, v4 as uuid } from 'uuid';
 import * as jwt from 'jsonwebtoken';
+
 import {
   IAccountChangePasswordBody,
   IAccountCreateBody,
@@ -24,6 +26,7 @@ import {
 } from '@models';
 import { namespaces } from '@app/utils';
 import { AccountOrm } from '@app/orm';
+import { IRequestAuth } from '@app/auth';
 
 @Injectable()
 export class AccountService {
@@ -37,11 +40,22 @@ export class AccountService {
     this.redis = this.redisService.getClient();
   }
 
-  async create({
-    login,
-    password,
-    role,
-  }: IAccountCreateBody): Promise<IAccountResponse> {
+  async create(
+    auth: IRequestAuth,
+    { login, password, role }: IAccountCreateBody,
+  ): Promise<IAccountResponse> {
+    if (!auth.role.superAdmin && (role.admin || role.superAdmin)) {
+      throw new ForbiddenException();
+    }
+
+    if (role.user && (role.admin || role.superAdmin)) {
+      throw new BadRequestException();
+    }
+
+    if (role.superAdmin) {
+      role.admin = true;
+    }
+
     const salt = uuid();
 
     const account = await this.accountModel.query().insertAndFetch({
@@ -56,9 +70,12 @@ export class AccountService {
   }
 
   async update(
+    auth: IRequestAuth,
     { id }: IAccountUpdateParams,
     { login }: IAccountUpdateBody,
   ): Promise<IAccountResponse> {
+    await this.checkForRights(id, auth);
+
     const account = await this.accountModel
       .query()
       .where('is_deleted', false)
@@ -67,14 +84,15 @@ export class AccountService {
         updated_at: new Date().toISOString(),
       });
 
-    if (!account) {
-      throw new NotFoundException();
-    }
-
     return this.cleanPublicAccount(account);
   }
 
-  async delete({ id }: IAccountDeleteParams): Promise<IAccountResponse> {
+  async delete(
+    auth: IRequestAuth,
+    { id }: IAccountDeleteParams,
+  ): Promise<IAccountResponse> {
+    await this.checkForRights(id, auth);
+
     const account = await this.accountModel
       .query()
       .where('is_deleted', false)
@@ -83,37 +101,20 @@ export class AccountService {
         updated_at: new Date().toISOString(),
       });
 
-    if (!account) {
-      throw new NotFoundException();
-    }
-
     return this.cleanPublicAccount(account);
   }
 
   async resetPassword(
+    auth: IRequestAuth,
     { id }: IAccountUpdateParams,
     { password }: Pick<IAccountResetPasswordBody, 'password'>,
   ): Promise<IAccountResponse> {
-    const salt = uuid();
-    const account = await this.accountModel
-      .query()
-      .where('is_deleted', false)
-      .updateAndFetchById(id, {
-        password: hash(`${password}${salt}`, namespaces.password),
-        updated_at: new Date().toISOString(),
-      });
-
-    if (!account) {
-      throw new NotFoundException();
-    }
-
-    await this.redis.set(`salt_${id}`, salt);
-
-    return this.cleanPublicAccount(account);
+    await this.checkForRights(id, auth);
+    return this.hardResetPassword({ id }, { password });
   }
 
   async changePassword(
-    { id }: any = { id: '04d43793-e0ba-53de-89ac-842d968e84bd' },
+    { id }: IRequestAuth,
     { password, oldPassword }: IAccountChangePasswordBody,
   ): Promise<IAccountResponse> {
     const account = await this.accountModel
@@ -136,10 +137,10 @@ export class AccountService {
       throw new BadRequestException();
     }
 
-    return this.resetPassword({ id }, { password });
+    return this.hardResetPassword({ id }, { password });
   }
 
-  async getById({ id }: IAccountGetByIdParams): Promise<IAccountResponse> {
+  async getSelf({ id }: IRequestAuth): Promise<IAccountResponse> {
     const account = await this.accountModel
       .query()
       .findById(id)
@@ -149,6 +150,14 @@ export class AccountService {
       throw new NotFoundException();
     }
 
+    return this.cleanPublicAccount(account);
+  }
+
+  async getById(
+    auth: IRequestAuth,
+    { id }: IAccountGetByIdParams,
+  ): Promise<IAccountResponse> {
+    const account = await this.checkForRights(id, auth);
     return this.cleanPublicAccount(account);
   }
 
@@ -181,7 +190,7 @@ export class AccountService {
         {
           id: account.id,
           role: account.role,
-        },
+        } as IRequestAuth,
         this.configService.get('jwt.privateKey'),
         {
           expiresIn: this.configService.get('jwt.expiresIn'),
@@ -207,6 +216,41 @@ export class AccountService {
       created_at,
       updated_at,
     };
+  }
+
+  private async hardResetPassword(
+    { id }: IAccountUpdateParams,
+    { password }: Pick<IAccountResetPasswordBody, 'password'>,
+  ): Promise<IAccountResponse> {
+    const salt = uuid();
+    const account = await this.accountModel
+      .query()
+      .where('is_deleted', false)
+      .updateAndFetchById(id, {
+        password: hash(`${password}${salt}`, namespaces.password),
+        updated_at: new Date().toISOString(),
+      });
+
+    await this.redis.set(`salt_${id}`, salt);
+
+    return this.cleanPublicAccount(account);
+  }
+
+  private async checkForRights(id: string, auth: IRequestAuth) {
+    const account = await this.accountModel
+      .query()
+      .where('is_deleted', false)
+      .findById(id);
+
+    if (!account) {
+      throw new NotFoundException();
+    }
+
+    if (!account.role.user && !auth.role.superAdmin) {
+      throw new ForbiddenException();
+    }
+
+    return account;
   }
 }
 

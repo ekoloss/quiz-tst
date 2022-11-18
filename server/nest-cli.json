@@ -31,13 +31,13 @@
         "tsConfigPath": "libs/orm/tsconfig.lib.json"
       }
     },
-    "group": {
+    "auth": {
       "type": "library",
-      "root": "libs/group",
+      "root": "libs/auth",
       "entryFile": "index",
-      "sourceRoot": "libs/group/src",
+      "sourceRoot": "libs/auth/src",
       "compilerOptions": {
-        "tsConfigPath": "libs/group/tsconfig.lib.json"
+        "tsConfigPath": "libs/auth/tsconfig.lib.json"
       }
     }
   },
