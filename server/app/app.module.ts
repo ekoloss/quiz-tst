@@ -7,8 +7,9 @@ import {
 import { ConfigService } from '@nestjs/config';
 
 import { configModule } from '@app/utils';
-import { AccountOrm } from '@app/orm';
+import {AccountOrm, GroupOrm} from '@app/orm';
 import { AccountModule } from '@app/account';
+import { GroupModule } from '@app/group';
 
 import { AppService } from './app.service';
 
@@ -16,6 +17,7 @@ import { AppService } from './app.service';
   providers: [AppService],
   imports: [
     AccountModule,
+    GroupModule,
     ObjectionModule.forRootAsync({
       imports: [configModule()],
       inject: [ConfigService],
@@ -30,7 +32,7 @@ import { AppService } from './app.service';
         },
       }),
     }),
-    ObjectionModule.forFeature([AccountOrm]),
+    ObjectionModule.forFeature([AccountOrm, GroupOrm]),
     configModule(),
   ],
 })

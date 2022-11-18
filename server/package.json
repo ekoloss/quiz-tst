@@ -25,6 +25,7 @@
     "@nestjs/common": "^9.0.0",
     "@nestjs/config": "^2.2.0",
     "@nestjs/core": "^9.0.0",
+    "@nestjs/mapped-types": "*",
     "@nestjs/platform-express": "^9.0.0",
     "ioredis": "^5.2.3",
     "joi": "^17.6.3",
@@ -48,7 +49,7 @@
     "@types/supertest": "^2.0.11",
     "@typescript-eslint/eslint-plugin": "^5.0.0",
     "@typescript-eslint/parser": "^5.0.0",
-    "eslint": "^8.0.1",
+    "eslint": "8.22.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^4.0.0",
     "jest": "28.1.3",
@@ -84,7 +85,8 @@
     "moduleNameMapper": {
       "^@app/account(|/.*)$": "<rootDir>/libs/account/src/$1",
       "^@app/utils(|/.*)$": "<rootDir>/libs/utils/src/$1",
-      "^@app/orm(|/.*)$": "<rootDir>/libs/orm/src/$1"
+      "^@app/orm(|/.*)$": "<rootDir>/libs/orm/src/$1",
+      "^@app/group(|/.*)$": "<rootDir>/libs/group/src/$1"
     }
   }
 }
