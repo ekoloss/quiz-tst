@@ -9,16 +9,31 @@ export interface IAccountModel {
   login: string;
   password: string;
   role: IAccountRole;
+  is_deleted: boolean;
+  last_login?: string;
+  created_at: string;
+  updated_at: string;
 }
 
-export interface IAccountCreateBody extends Omit<IAccountModel, 'id'> {
+export interface IAccountCreateBody extends Omit<IAccountModel, 'id' | 'is_deleted' | 'last_login' | 'created_at' | 'updated_at'> {
   passwordConfirm: string;
 }
 export interface IAccountUpdateParams extends Pick<IAccountModel, 'id'> {}
-export interface IAccountUpdateBody extends Omit<IAccountModel, 'password' | 'id'> {}
+export interface IAccountUpdateBody extends Pick<IAccountModel, 'login'> {}
+export interface IAccountResetPasswordBody extends Pick<IAccountModel, 'password'> {
+  passwordConfirm: string;
+}
+export interface IAccountGetByIdParams extends Pick<IAccountModel, 'id'> {}
+export interface IAccountDeleteParams extends Pick<IAccountModel, 'id'> {}
+
 export interface IAccountChangePasswordBody extends Pick<IAccountModel, 'password'> {
   passwordConfirm: string;
-  newPassword: string;
+  oldPassword: string;
 }
-export interface IAccountResponse extends Omit<IAccountModel, 'password'> {}
 
+export interface IAccountResponse extends Omit<IAccountModel, 'password' | 'is_deleted'> {}
+
+export interface ILoginBody extends Pick<IAccountModel, 'login' | 'password'> {}
+export interface ILoginResponse {
+  token: string;
+}

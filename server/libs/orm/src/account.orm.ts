@@ -6,13 +6,11 @@ import {
 } from 'nestjs-objection';
 import { IAccountModel, IAccountRole } from '@models';
 
-@Table({ softDelete: true, tableName: 'account' })
+@Table({ tableName: 'account' })
 export class AccountOrm extends Model implements IAccountModel {
   @Column({
     type: columnTypes.uuid,
     primary: true,
-    unique: true,
-    notNullable: true,
   })
   id: string;
 
@@ -34,4 +32,26 @@ export class AccountOrm extends Model implements IAccountModel {
     notNullable: true,
   })
   role: IAccountRole;
+
+  @Column({
+    type: columnTypes.boolean,
+    default: 'false',
+    notNullable: true,
+  })
+  is_deleted: boolean;
+
+  @Column({ type: columnTypes.datetime })
+  last_login: string;
+
+  @Column({
+    type: columnTypes.datetime,
+    notNullable: true,
+  })
+  created_at: string;
+
+  @Column({
+    type: columnTypes.datetime,
+    notNullable: true,
+  })
+  updated_at: string;
 }

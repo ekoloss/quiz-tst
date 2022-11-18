@@ -2,7 +2,14 @@ import { ConfigModule, ConfigModuleOptions } from '@nestjs/config';
 import { DynamicModule } from '@nestjs/common';
 import * as Joi from 'joi';
 
-import { redisConfig, redisValidate, pgConfig, pgValidate } from '../config';
+import {
+  redisConfig,
+  redisValidate,
+  pgConfig,
+  pgValidate,
+  jwtConfig,
+  jwtValidate,
+} from '../config';
 
 export const configModule = ({
   validationSchema: validation = {},
@@ -17,10 +24,11 @@ export const configModule = ({
     COMPOSE_PROJECT_NAME: Joi.string().required(),
     ...redisValidate,
     ...pgValidate,
+    ...jwtValidate,
     ...validation,
   };
 
-  const load = [redisConfig, pgConfig, ...customLoad];
+  const load = [redisConfig, pgConfig, jwtConfig, ...customLoad];
 
   return ConfigModule.forRoot({
     load,
