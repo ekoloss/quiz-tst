@@ -1,3 +1,5 @@
+import { IPaginate, ISort } from './core';
+
 export interface IAccountRole {
   superAdmin: boolean;
   admin: boolean;
@@ -25,6 +27,13 @@ export interface IAccountResetPasswordBody extends Pick<IAccountModel, 'password
 }
 export interface IAccountGetByIdParams extends Pick<IAccountModel, 'id'> {}
 export interface IAccountDeleteParams extends Pick<IAccountModel, 'id'> {}
+
+export type sortFields = 'login' | 'created_at' | 'last_login';
+export interface IAccountGetListQuery extends IPaginate, ISort<sortFields> {
+  login?: string;
+  start_date?: string;
+  end_date?: string;
+}
 
 export interface IAccountChangePasswordBody extends Pick<IAccountModel, 'password'> {
   passwordConfirm: string;

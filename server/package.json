@@ -25,8 +25,8 @@
     "@nestjs/common": "^9.0.0",
     "@nestjs/config": "^2.2.0",
     "@nestjs/core": "^9.0.0",
-    "@nestjs/mapped-types": "*",
     "@nestjs/platform-express": "^9.0.0",
+    "date-fns": "^2.29.3",
     "ioredis": "^5.2.3",
     "joi": "^17.6.3",
     "jsonwebtoken": "^8.5.1",
@@ -86,7 +86,7 @@
       "^@app/account(|/.*)$": "<rootDir>/libs/account/src/$1",
       "^@app/utils(|/.*)$": "<rootDir>/libs/utils/src/$1",
       "^@app/orm(|/.*)$": "<rootDir>/libs/orm/src/$1",
-      "^@app/group(|/.*)$": "<rootDir>/libs/group/src/$1"
+      "^@app/auth(|/.*)$": "<rootDir>/libs/auth/src/$1"
     }
   }
 }

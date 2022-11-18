@@ -4,6 +4,7 @@ import {
   Post,
   Body,
   Param,
+  Query,
   Get,
   Delete,
   UseGuards,
@@ -14,12 +15,14 @@ import {
   IAccountCreateBody,
   IAccountDeleteParams,
   IAccountGetByIdParams,
+  IAccountGetListQuery,
   IAccountResetPasswordBody,
   IAccountResponse,
   IAccountUpdateBody,
   IAccountUpdateParams,
   ILoginBody,
   ILoginResponse,
+  IPaginateResult,
 } from '@models';
 import { apiPrefix } from '@app/utils';
 import { Auth, AuthData, AuthGuard, IRequestAuth } from '@app/auth';
@@ -85,6 +88,22 @@ export class AccountController {
   @Auth({ mode: 'authorised' })
   getSelfAccount(@AuthData() auth: IRequestAuth): Promise<IAccountResponse> {
     return this.appService.getSelf(auth);
+  }
+
+  @Get('account/list')
+  @Auth({ role: ['admin'] })
+  getList(
+    @Query(accountValidation.getList.query) query: IAccountGetListQuery,
+  ): Promise<IPaginateResult<IAccountResponse>> {
+    return this.appService.getList(query);
+  }
+
+  @Get('account/privileged_list')
+  @Auth({ role: ['superAdmin'] })
+  getPrivilegedList(
+    @Query(accountValidation.getList.query) query: IAccountGetListQuery,
+  ): Promise<IPaginateResult<IAccountResponse>> {
+    return this.appService.getList(query, { userList: false });
   }
 
   @Get('account/:id')

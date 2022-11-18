@@ -8,14 +8,17 @@ import { ConfigService } from '@nestjs/config';
 import { RedisService } from '@liaoliaots/nestjs-redis';
 import Redis from 'ioredis';
 import { InjectModel } from 'nestjs-objection';
+import { ref } from 'objection';
 import { v5 as hash, v4 as uuid } from 'uuid';
 import * as jwt from 'jsonwebtoken';
+import { startOfDay, endOfDay } from 'date-fns';
 
 import {
   IAccountChangePasswordBody,
   IAccountCreateBody,
   IAccountDeleteParams,
   IAccountGetByIdParams,
+  IAccountGetListQuery,
   IAccountModel,
   IAccountResetPasswordBody,
   IAccountResponse,
@@ -23,6 +26,7 @@ import {
   IAccountUpdateParams,
   ILoginBody,
   ILoginResponse,
+  IPaginateResult,
 } from '@models';
 import { namespaces } from '@app/utils';
 import { AccountOrm } from '@app/orm';
@@ -200,6 +204,60 @@ export class AccountService {
     };
   }
 
+  async getList(
+    {
+      page,
+      page_size,
+      sort_by,
+      sort_order,
+      login,
+      start_date,
+      end_date,
+    }: IAccountGetListQuery,
+    {
+      userList = true,
+    }: {
+      userList?: boolean;
+    } = {},
+  ): Promise<IPaginateResult<IAccountResponse>> {
+    const query = this.accountModel
+      .query()
+      .where('is_deleted', false)
+      .where(ref('role:user').castBool(), userList)
+      .page(page, page_size);
+
+    if (sort_by && sort_order) {
+      query.orderBy(sort_by, sort_order);
+    }
+
+    if (login) {
+      query.where('login', 'ilike', `%${login}%`);
+    }
+
+    if (start_date) {
+      query.where(
+        'created_at',
+        '>',
+        startOfDay(new Date(start_date)).toISOString(),
+      );
+    }
+
+    if (end_date) {
+      query.where(
+        'created_at',
+        '<',
+        endOfDay(new Date(end_date)).toISOString(),
+      );
+    }
+
+    const res = await query;
+
+    return {
+      total: res.total,
+      results: res.results.map((account) => this.cleanPublicAccount(account)),
+    };
+  }
+
   private cleanPublicAccount({
     id,
     login,
@@ -253,6 +311,3 @@ export class AccountService {
     return account;
   }
 }
-
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-// console.log(require('crypto').randomBytes(256).toString('latin1'));
