@@ -1,0 +1,21 @@
+{
+  "moduleFileExtensions": [
+    "js",
+    "json",
+    "ts"
+  ],
+  "rootDir": ".",
+  "testEnvironment": "node",
+  "testRegex": ".e2e-spec.ts$",
+  "transform": {
+    "^.+\\.(t|j)s$": "ts-jest"
+  },
+  "moduleNameMapper": {
+    "@app/account/(.*)": "<rootDir>/../libs/account/src/$1",
+    "@app/account": "<rootDir>/../libs/account/src",
+    "@app/utils/(.*)": "<rootDir>/../libs/utils/src/$1",
+    "@app/utils": "<rootDir>/../libs/utils/src",
+    "@app/orm/(.*)": "<rootDir>/../libs/orm/src/$1",
+    "@app/orm": "<rootDir>/../libs/orm/src"
+  }
+}

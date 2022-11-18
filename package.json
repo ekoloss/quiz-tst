@@ -1,0 +1,20 @@
+{
+  "name": "enigma",
+  "version": "0.0.1",
+  "description": "",
+  "author": "",
+  "private": true,
+  "license": "UNLICENSED",
+  "scripts": {
+    "build": "npm run build:server && npm run build:client",
+    "clean:server_container": "docker container stop enigma_server_prod; docker container rm enigma_server_prod;",
+    "clean:client_container": "docker container stop enigma_client_prod; docker container rm enigma_client_prod;",
+    "build:server": "npm run clean:server_container; rm -rf server/dist && docker build -f server/Dockerfile . -t enigma_server_prod",
+    "build:client": "npm run clean:client_container; rm -rf client/build && docker build -f client/Dockerfile . -t enigma_client_prod",
+    "start:server:prod": "npm run clean:server_container; docker run -d -p4000:4000 --name enigma_server_prod --env-file .env --env-file server/.env enigma_server_prod",
+    "start:client:prod": "npm run clean:client_container; docker run -d -p3000:3000 --name enigma_client_prod --env-file .env --env-file client/.env enigma_client_prod",
+    "start": "docker-compose up",
+    "start:server": "docker-compose up server",
+    "start:client": "docker-compose up client"
+  }
+}
