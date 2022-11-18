@@ -1,13 +1,8 @@
-import {
-  Model,
-  Column,
-  Table,
-  columnTypes,
-} from 'nestjs-objection';
-import { IAccountModel, IAccountRole } from '@models';
+import { Model, Column, Table, columnTypes } from 'nestjs-objection';
+import { ITemplateModel } from '@models';
 
-@Table({ tableName: 'account' })
-export class AccountOrm extends Model implements IAccountModel {
+@Table({ tableName: 'template' })
+export class TemplateOrm extends Model implements ITemplateModel {
   @Column({
     type: columnTypes.uuid,
     primary: true,
@@ -16,22 +11,21 @@ export class AccountOrm extends Model implements IAccountModel {
 
   @Column({
     type: columnTypes.string,
-    unique: true,
     notNullable: true,
   })
-  login: string;
+  name: string;
 
   @Column({
-    type: columnTypes.string,
+    type: columnTypes.number,
     notNullable: true,
+    default: 0,
   })
-  password: string;
+  interview_count: number;
 
   @Column({
-    type: columnTypes.json,
-    notNullable: true,
+    type: columnTypes.datetime,
   })
-  role: IAccountRole;
+  last_interview: string;
 
   @Column({
     type: columnTypes.boolean,
@@ -39,9 +33,6 @@ export class AccountOrm extends Model implements IAccountModel {
     notNullable: true,
   })
   is_deleted: boolean;
-
-  @Column({ type: columnTypes.datetime })
-  last_login: string;
 
   @Column({
     type: columnTypes.datetime,

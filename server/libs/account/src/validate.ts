@@ -9,7 +9,7 @@ import {
   IAccountRole,
   IAccountUpdateBody,
   IAccountUpdateParams,
-  sortFields,
+  accountSortFields,
 } from '@models';
 import {
   defaultPagination,
@@ -108,7 +108,7 @@ export const accountValidation = {
         start_date: Joi.date().max('now'),
         end_date: Joi.date().min(Joi.ref('start_date')),
         ...paginateSchema(),
-        ...sortSchema<sortFields>(['login', 'last_login', 'created_at']),
+        ...sortSchema<accountSortFields>(['login', 'last_login', 'created_at']),
       }).default({
         ...defaultPagination(),
       }),
