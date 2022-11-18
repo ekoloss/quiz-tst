@@ -47,6 +47,12 @@
       "@app/orm/*": [
         "libs/orm/src/*"
       ],
+      "@app/group": [
+        "libs/group/src"
+      ],
+      "@app/group/*": [
+        "libs/group/src/*"
+      ],
       "@app/auth": [
         "libs/auth/src"
       ],
