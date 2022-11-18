@@ -1,5 +1,6 @@
-import { Model, Column, Table, columnTypes } from 'nestjs-objection';
+import { Model, Column, Table, columnTypes, Relation } from 'nestjs-objection';
 import { IAccountModel, IAccountRole } from '@models';
+import { GroupOrm } from '@app/orm/group.orm';
 
 @Table({ tableName: 'account' })
 export class AccountOrm extends Model implements IAccountModel {

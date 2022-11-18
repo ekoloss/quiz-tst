@@ -7,7 +7,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 
 import { configModule } from '@app/utils';
-import {AccountOrm, GroupOrm} from '@app/orm';
+import { AccountOrm, GroupOrm, AccountGroupsOrm } from '@app/orm';
 import { AccountModule } from '@app/account';
 import { GroupModule } from '@app/group';
 
@@ -32,7 +32,7 @@ import { AppService } from './app.service';
         },
       }),
     }),
-    ObjectionModule.forFeature([AccountOrm, GroupOrm]),
+    ObjectionModule.forFeature([AccountOrm, GroupOrm, AccountGroupsOrm]),
     configModule(),
   ],
 })

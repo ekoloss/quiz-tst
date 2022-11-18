@@ -27,6 +27,7 @@ export interface IAccountResetPasswordBody extends Pick<IAccountModel, 'password
 }
 export interface IAccountGetByIdParams extends Pick<IAccountModel, 'id'> {}
 export interface IAccountDeleteParams extends Pick<IAccountModel, 'id'> {}
+export interface IAccountAddGroupsParams extends Pick<IAccountModel, 'id'> {}
 
 export type sortFields = 'login' | 'created_at' | 'last_login';
 export interface IAccountGetListQuery extends IPaginate, ISort<sortFields> {

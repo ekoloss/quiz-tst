@@ -1,55 +1,80 @@
-import { Controller, Get, Post, Body, Param, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Query,
+  Delete,
+  Put,
+  UseGuards,
+} from '@nestjs/common';
 import { GroupService } from './group.service';
+import { groupValidation } from './validate';
 import {
-  groupCreateBodyValidation,
-  groupGetListBodyValidation,
-  groupIdentityBodyValidation,
-  groupUpdateBodyValidation,
-} from './validate';
-import {
+  IAccountAddGroupsParams,
   IGroupCreateBody,
-  IGroupGetListBody,
+  IGroupGetListQuery,
   IGroupIdentity,
+  IGroupIdentityList,
   IGroupModel,
   IGroupUpdateBody,
 } from '@models';
+import { Auth, AuthGuard } from '@app/auth';
+import { apiPrefix } from '@app/utils';
 
-@Controller('group')
+@Controller(`${apiPrefix}/group`)
+@UseGuards(AuthGuard)
 export class GroupController {
   constructor(private readonly service: GroupService) {}
 
   @Post()
+  @Auth({ role: ['admin'] })
   createGroup(
-    @Body(groupCreateBodyValidation) body: IGroupCreateBody,
+    @Body(groupValidation.create.body) body: IGroupCreateBody,
   ): Promise<IGroupModel> {
     return this.service.createGroup(body);
   }
 
-  @Post('/update')
+  @Put('/update/:id')
+  @Auth({ role: ['admin'] })
   updateGroup(
-    @Body(groupUpdateBodyValidation) body: IGroupUpdateBody,
+    @Param(groupValidation.update.param) param: IGroupIdentity,
+    @Body(groupValidation.update.body) body: IGroupUpdateBody,
   ): Promise<IGroupModel> {
-    return this.service.updateGroup(body);
+    return this.service.updateGroup(param, body);
   }
 
-  @Post('/delete')
+  @Delete('/delete/:id')
+  @Auth({ role: ['admin'] })
   deleteGroup(
-    @Body(groupIdentityBodyValidation) body: IGroupIdentity,
+    @Param(groupValidation.delete.param) param: IGroupIdentity,
   ): Promise<IGroupModel> {
-    return this.service.deleteGroup(body);
+    return this.service.deleteGroup(param);
   }
 
   @Get('/list')
+  @Auth({ role: ['admin'] })
   getGroupList(
-    @Query(groupGetListBodyValidation) query: IGroupGetListBody,
+    @Query(groupValidation.getList.query) query: IGroupGetListQuery,
   ): Promise<IGroupModel[]> {
     return this.service.getList(query);
   }
 
   @Get('/:id')
+  @Auth({ role: ['admin'] })
   getGroupById(
-    @Param(groupIdentityBodyValidation) param: IGroupIdentity,
+    @Param(groupValidation.getById.param) param: IGroupIdentity,
   ): Promise<IGroupModel> {
     return this.service.getById(param);
+  }
+
+  @Put('/add/account/:id/')
+  @Auth({ role: ['admin'] })
+  addGroup(
+    @Param(groupValidation.addGroup.param) param: IAccountAddGroupsParams,
+    @Body(groupValidation.addGroup.body) body: IGroupIdentityList,
+  ): Promise<IGroupModel[]> {
+    return this.service.addGroups(param, body);
   }
 }

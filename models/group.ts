@@ -1,3 +1,4 @@
+import {IPaginate} from "./core";
 
 export interface IGroupModel {
   id: string;
@@ -5,11 +6,13 @@ export interface IGroupModel {
 }
 
 export interface IGroupCreateBody extends Omit<IGroupModel, 'id' > {}
-export interface IGroupGetListBody {
+export interface IGroupGetListQuery extends IPaginate {
   name?: string;
-  page?: number;
-  pageLimit?: number;
 }
-export interface IGroupUpdateBody extends IGroupModel {}
+export interface IGroupUpdateBody extends Omit<IGroupModel, 'id' > {}
 export interface IGroupIdentity extends Omit<IGroupModel, 'name' > {}
+
+export interface IGroupIdentityList {
+  groups: IGroupIdentity[]
+}
 
