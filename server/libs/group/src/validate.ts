@@ -1,6 +1,7 @@
 import * as Joi from 'joi';
 import { IGroupCreateBody, IGroupGetListBody, IGroupUpdateBody } from '@models';
 import { ValidatorPipe } from '@app/utils';
+import { groupConstants } from '@app/utils';
 
 export const groupCreateBodyValidation = new ValidatorPipe<IGroupCreateBody>(
   Joi.object<IGroupCreateBody>({
@@ -24,6 +25,7 @@ export const groupIdentityBodyValidation = new ValidatorPipe<IGroupUpdateBody>(
 export const groupGetListBodyValidation = new ValidatorPipe<IGroupGetListBody>(
   Joi.object<IGroupGetListBody>({
     name: Joi.string().min(3),
-    page: Joi.string(),
+    page: Joi.number().default(groupConstants.page),
+    pageLimit: Joi.number().default(groupConstants.pageLimit),
   }),
 );

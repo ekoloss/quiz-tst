@@ -8,7 +8,6 @@ import {
   IGroupModel,
   IGroupUpdateBody,
 } from '@models';
-import { groupConstants } from '@app/utils';
 
 @Injectable()
 export class GroupService {
@@ -36,14 +35,12 @@ export class GroupService {
   }
 
   getList(body?: IGroupGetListBody): Promise<IGroupModel[]> {
-    const page = body.page ?? groupConstants.page;
-    const pageLimit = body.pageLimit ?? groupConstants.pageLimit;
     const qb = this.groupModel.query().where('is_deleted', false);
     if (body?.name) {
       qb.where('name', 'ilike', `%${body.name}%`);
     }
 
-    qb.page(page, pageLimit);
+    qb.page(body.page, body.pageLimit);
     return qb;
   }
 

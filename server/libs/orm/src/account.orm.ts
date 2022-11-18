@@ -1,9 +1,4 @@
-import {
-  Model,
-  Column,
-  Table,
-  columnTypes,
-} from 'nestjs-objection';
+import { Model, Column, Table, columnTypes } from 'nestjs-objection';
 import { IAccountModel, IAccountRole } from '@models';
 
 @Table({ tableName: 'account' })
