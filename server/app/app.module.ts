@@ -6,10 +6,14 @@ import {
 } from 'nestjs-objection';
 import { ConfigService } from '@nestjs/config';
 
-import { AccountModule } from '@app/account';
 import { configModule } from '@app/utils';
+import { AccountOrm } from '@app/orm';
+import { AccountModule } from '@app/account';
+
+import { AppService } from './app.service';
 
 @Module({
+  providers: [AppService],
   imports: [
     AccountModule,
     ObjectionModule.forRootAsync({
@@ -26,6 +30,7 @@ import { configModule } from '@app/utils';
         },
       }),
     }),
+    ObjectionModule.forFeature([AccountOrm]),
     configModule(),
   ],
 })
